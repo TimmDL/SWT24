@@ -6,7 +6,7 @@ import data
 # Load the model and tokenizer
 @st.cache_resource
 def load_model():
-    MODEL_NAME = "microsoft/Phi-3-medium-128k-instruct"
+    MODEL_NAME = "microsoft/Phi-3-mini-4k-instruct"
     tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
     model = AutoModelForCausalLM.from_pretrained(MODEL_NAME)
     return pipeline("text-generation", model=model, tokenizer=tokenizer)
