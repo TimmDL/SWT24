@@ -1,0 +1,68 @@
+[
+    {
+        "CustomerID": "101",
+        "Name": "John Smith",
+        "Email": "john.smith@example.com",
+        "BorrowedBooks": ""
+    },
+    {
+        "CustomerID": "102",
+        "Name": "Jane Doe",
+        "Email": "jane.doe@example.com",
+        "BorrowedBooks": [
+            "War and Peace"
+        ]
+    },
+    {
+        "CustomerID": "103",
+        "Name": "Alice Johnson",
+        "Email": "alice.johnson@example.com",
+        "BorrowedBooks": ""
+    },
+    {
+        "CustomerID": "104",
+        "Name": "Bob Brown",
+        "Email": "bob.brown@example.com",
+        "BorrowedBooks": []
+    },
+    {
+        "CustomerID": "105",
+        "Name": "Charlie Davis",
+        "Email": "charlie.davis@example.com",
+        "BorrowedBooks": [
+            "The Odyssey"
+        ]
+    },
+    {
+        "CustomerID": "106",
+        "Name": "Diana Evans",
+        "Email": "diana.evans@example.com",
+        "BorrowedBooks": []
+    },
+    {
+        "CustomerID": "107",
+        "Name": "Ethan Harris",
+        "Email": "ethan.harris@example.com",
+        "BorrowedBooks": []
+    },
+    {
+        "CustomerID": "108",
+        "Name": "Fiona Green",
+        "Email": "fiona.green@example.com",
+        "BorrowedBooks": []
+    },
+    {
+        "CustomerID": "109",
+        "Name": "George King",
+        "Email": "george.king@example.com",
+        "BorrowedBooks": []
+    },
+    {
+        "CustomerID": "110",
+        "Name": "Hannah Lewis",
+        "Email": "hannah.lewis@example.com",
+        "BorrowedBooks": [
+            "The Catcher in the Rye"
+        ]
+    }
+]

@@ -1,0 +1,72 @@
+[
+    {
+        "Title": "The Great Gatsby",
+        "Author": "F. Scott Fitzgerald",
+        "Genre": "Fiction",
+        "Availability": "Available",
+        "BorrowedBy": ""
+    },
+    {
+        "Title": "To Kill a Mockingbird",
+        "Author": "Harper Lee",
+        "Genre": "Fiction",
+        "Availability": "Available",
+        "BorrowedBy": ""
+    },
+    {
+        "Title": "1984",
+        "Author": "George Orwell",
+        "Genre": "Science Fiction",
+        "Availability": "Available",
+        "BorrowedBy": ""
+    },
+    {
+        "Title": "Moby Dick",
+        "Author": "Herman Melville",
+        "Genre": "Classic",
+        "Availability": "Available",
+        "BorrowedBy": ""
+    },
+    {
+        "Title": "War and Peace",
+        "Author": "Leo Tolstoy",
+        "Genre": "Historical",
+        "Availability": "Borrowed",
+        "BorrowedBy": "102"
+    },
+    {
+        "Title": "Pride and Prejudice",
+        "Author": "Jane Austen",
+        "Genre": "Romance",
+        "Availability": "Available",
+        "BorrowedBy": ""
+    },
+    {
+        "Title": "The Catcher in the Rye",
+        "Author": "J.D. Salinger",
+        "Genre": "Fiction",
+        "Availability": "Borrowed",
+        "BorrowedBy": "110"
+    },
+    {
+        "Title": "The Hobbit",
+        "Author": "J.R.R. Tolkien",
+        "Genre": "Fantasy",
+        "Availability": "Available",
+        "BorrowedBy": ""
+    },
+    {
+        "Title": "Crime and Punishment",
+        "Author": "Fyodor Dostoevsky",
+        "Genre": "Mystery",
+        "Availability": "Available",
+        "BorrowedBy": ""
+    },
+    {
+        "Title": "The Odyssey",
+        "Author": "Homer",
+        "Genre": "Classic",
+        "Availability": "Borrowed",
+        "BorrowedBy": "105"
+    }
+]

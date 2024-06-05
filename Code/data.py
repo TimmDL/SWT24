@@ -1,16 +1,28 @@
-import pandas as pd
+import json
+import os
 
-# Load data from CSV files
-books_df = pd.read_csv("Data/books.csv")
-customers_df = pd.read_csv("Data/customers.csv")
+# Define the paths to the JSON files using relative paths
+base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+books_file_path = os.path.join(base_dir, 'Data', 'books.json')
+customers_file_path = os.path.join(base_dir, 'Data', 'customers.json')
 
-# Ensure the BorrowedBooks column exists and is a string
-if "BorrowedBooks" not in customers_df.columns:
-    customers_df["BorrowedBooks"] = ""
+# Load data from JSON files
+def load_books():
+    with open(books_file_path, "r", encoding="utf-8-sig") as file:
+        return json.load(file)
 
-# Save data to CSV files
-def save_books_data():
-    books_df.to_csv("books.csv", index=False)
+def load_customers():
+    with open(customers_file_path, "r", encoding="utf-8-sig") as file:
+        return json.load(file)
 
-def save_customers_data():
-    customers_df.to_csv("customers.csv", index=False)
+# Save data to JSON files
+def save_books(data):
+    with open(books_file_path, "w", encoding="utf-8") as file:
+        json.dump(data, file, indent=4)
+
+def save_customers(data):
+    with open(customers_file_path, "w", encoding="utf-8") as file:
+        json.dump(data, file, indent=4)
+
+books_data = load_books()
+customers_data = load_customers()
