@@ -3,70 +3,80 @@
         "Title": "The Great Gatsby",
         "Author": "F. Scott Fitzgerald",
         "Genre": "Fiction",
-        "Availability": "Available",
-        "BorrowedBy": ""
+        "Availability": "Borrowed",
+        "BorrowedBy": "101",
+        "ISBN": "9780743273565"
     },
     {
         "Title": "To Kill a Mockingbird",
         "Author": "Harper Lee",
         "Genre": "Fiction",
-        "Availability": "Available",
-        "BorrowedBy": ""
+        "Availability": "Borrowed",
+        "BorrowedBy": "101",
+        "ISBN": "9780061120084"
     },
     {
         "Title": "1984",
         "Author": "George Orwell",
         "Genre": "Science Fiction",
         "Availability": "Available",
-        "BorrowedBy": ""
+        "BorrowedBy": "",
+        "ISBN": "9780451524935"
     },
     {
         "Title": "Moby Dick",
         "Author": "Herman Melville",
         "Genre": "Classic",
-        "Availability": "Available",
-        "BorrowedBy": ""
+        "Availability": "Borrowed",
+        "BorrowedBy": "103",
+        "ISBN": "9781503280786"
     },
     {
         "Title": "War and Peace",
         "Author": "Leo Tolstoy",
         "Genre": "Historical",
         "Availability": "Borrowed",
-        "BorrowedBy": "102"
+        "BorrowedBy": "102",
+        "ISBN": "9781400079988"
     },
     {
         "Title": "Pride and Prejudice",
         "Author": "Jane Austen",
         "Genre": "Romance",
         "Availability": "Available",
-        "BorrowedBy": ""
+        "BorrowedBy": "",
+        "ISBN": "9781503290563"
     },
     {
         "Title": "The Catcher in the Rye",
         "Author": "J.D. Salinger",
         "Genre": "Fiction",
         "Availability": "Borrowed",
-        "BorrowedBy": "110"
+        "BorrowedBy": "110",
+        "ISBN": "9780316769488"
     },
     {
         "Title": "The Hobbit",
         "Author": "J.R.R. Tolkien",
         "Genre": "Fantasy",
         "Availability": "Available",
-        "BorrowedBy": ""
+        "BorrowedBy": "",
+        "ISBN": "9780547928227"
     },
     {
         "Title": "Crime and Punishment",
         "Author": "Fyodor Dostoevsky",
         "Genre": "Mystery",
         "Availability": "Available",
-        "BorrowedBy": ""
+        "BorrowedBy": "",
+        "ISBN": "9780486415871"
     },
     {
         "Title": "The Odyssey",
         "Author": "Homer",
         "Genre": "Classic",
         "Availability": "Borrowed",
-        "BorrowedBy": "105"
+        "BorrowedBy": "105",
+        "ISBN": "9780140268867"
     }
 ]
