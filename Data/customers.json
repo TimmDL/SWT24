@@ -11,7 +11,9 @@
         "Name": "Jane Doe",
         "Address": "456 Oak Avenue, Austin, TX 73301",
         "Email": "jane.doe@example.com",
-        "BorrowedBooks": "War and Peace"
+        "BorrowedBooks": [
+            "The Great Gatsby"
+        ]
     },
     {
         "CustomerID": "103",

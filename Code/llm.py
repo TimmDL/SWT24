@@ -1,19 +1,14 @@
 import streamlit as st
-from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
+import json
 import data
+import time
+from ollama import Client
 
-
-# Load the model and tokenizer
-@st.cache_resource
-def load_model():
-    MODEL_NAME = "microsoft/Phi-3-mini-4k-instruct"
-    tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
-    model = AutoModelForCausalLM.from_pretrained(MODEL_NAME)
-    return pipeline("text-generation", model=model, tokenizer=tokenizer)
-
-
-chatbot = load_model()
-
+# Function to make a request to the local Ollama server
+def query_ollama(prompt):
+    client = Client(host='http://localhost:11434')
+    response = client.generate(model='phi3', prompt=prompt)
+    return response
 
 # Function to find a customer by ID or name
 def find_customer(identifier):
@@ -22,14 +17,12 @@ def find_customer(identifier):
     else:
         return next((c for c in data.customers_data if c['Name'] == identifier), None)
 
-
 # Function to find a book by title or ISBN
 def find_book(identifier):
     if identifier.replace('-', '').isdigit():
         return next((b for b in data.books_data if b['ISBN'] == identifier), None)
     else:
         return next((b for b in data.books_data if b['Title'] == identifier), None)
-
 
 # Function to execute commands based on LLM output
 def execute_command(parsed_command):
@@ -43,7 +36,6 @@ def execute_command(parsed_command):
         return return_book(customer_identifier, book_identifier)
     else:
         return "Command not recognized."
-
 
 # Function to borrow a book
 def borrow_book(customer_identifier, book_identifier):
@@ -64,7 +56,6 @@ def borrow_book(customer_identifier, book_identifier):
     else:
         return "Error: Customer or book not found, or book is not available."
 
-
 # Function to return a book
 def return_book(customer_identifier, book_identifier):
     customer = find_customer(customer_identifier)
@@ -84,39 +75,76 @@ def return_book(customer_identifier, book_identifier):
     else:
         return "Error: Customer or book not found, or book is not currently borrowed."
 
+# Helper function to validate JSON structure
+def validate_json_structure(json_string):
+    try:
+        parsed = json.loads(json_string)
+        if 'intent' in parsed and 'customer_identifier' in parsed and 'book_identifier' in parsed:
+            return parsed
+        else:
+            return None
+    except json.JSONDecodeError:
+        return None
 
 # Experimental LLM interface
 def experimental():
     st.title("LLM Experimental Interface")
-
-    # Instructions for the user
     st.write("Welcome to the LLM interface. You can control the website through text commands.")
 
-    # Text input for user commands
     user_input = st.text_area("Enter your command here:")
 
     if st.button("Submit"):
         if user_input:
-            # Process the command through the LLM model
-            response = chatbot(user_input, max_length=200)
-            generated_text = response[0]['generated_text']
+            status_placeholder = st.empty()
+            progress_bar = st.progress(0)
 
-            # Example of parsed_command structure:
-            # parsed_command = {
-            #     "intent": "borrow_book",
-            #     "customer_identifier": "101",
-            #     "book_identifier": "978-3-16-148410-0"
-            # }
+            status_placeholder.text("Processing command...")
 
-            # Convert the string response to a dictionary
-            import ast
-            try:
-                parsed_command = ast.literal_eval(generated_text)
+            prompt = (
+                f"Convert the following command into a JSON format with keys 'intent', "
+                f"'customer_identifier', and 'book_identifier'. Use 'borrow_book' or 'return_book' "
+                f"as the intent. Ensure the JSON is properly formatted: {user_input}"
+            )
+            response = query_ollama(prompt)
+
+            # Debugging print statement
+            st.write("### Debugging Response")
+            st.write(response)
+
+            # Extract JSON from response
+            response_content = response.get('response', '')
+            start = response_content.find('```json') + 7
+            end = response_content.find('```', start)
+            json_string = response_content[start:end].strip()
+
+            # Debugging print statement for extracted JSON
+            st.write("### Extracted JSON")
+            st.write(json_string)
+
+            # Adjust based on actual response structure
+            generated_text = json_string
+
+            progress_bar.progress(50)
+            status_placeholder.text("Generating response...")
+
+            st.write("### Generated Text")
+            st.write(generated_text)
+
+            for i in range(50, 100):
+                time.sleep(0.05)
+                progress_bar.progress(i + 1)
+
+            parsed_command = validate_json_structure(generated_text)
+            if parsed_command:
                 result = execute_command(parsed_command)
                 st.write("### LLM Response")
                 st.write(result)
-            except (SyntaxError, ValueError):
+            else:
                 st.write("### LLM Response")
-                st.write("Error: Unable to parse the command.")
+                st.write(f"Error: Unable to parse the command. Generated text was: {generated_text}")
+                st.write("Please ensure your input clearly indicates the customer and book details.")
+
+            progress_bar.progress(100)
+            status_placeholder.text("Processing complete.")
         else:
             st.error("Please enter a command.")

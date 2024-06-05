@@ -3,8 +3,8 @@
         "Title": "The Great Gatsby",
         "Author": "F. Scott Fitzgerald",
         "Genre": "Fiction",
-        "Availability": "Available",
-        "BorrowedBy": "",
+        "Availability": "Borrowed",
+        "BorrowedBy": "102",
         "ISBN": "9780743273565"
     },
     {
