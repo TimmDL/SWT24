@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import data
 
+from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
+
 
 def home_page():
     st.title("Library Admin Dashboard")
@@ -328,3 +330,4 @@ def lending_records_page():
             st.write("No customers found.")
     else:
         st.write("Please enter a search query.")
+
