@@ -3,8 +3,8 @@
         "Title": "The Great Gatsby",
         "Author": "F. Scott Fitzgerald",
         "Genre": "Fiction",
-        "Availability": "Borrowed",
-        "BorrowedBy": "101",
+        "Availability": "Available",
+        "BorrowedBy": "",
         "ISBN": "9780743273565"
     },
     {
@@ -35,8 +35,8 @@
         "Title": "War and Peace",
         "Author": "Leo Tolstoy",
         "Genre": "Historical",
-        "Availability": "Borrowed",
-        "BorrowedBy": "102",
+        "Availability": "Available",
+        "BorrowedBy": "",
         "ISBN": "9781400079988"
     },
     {
