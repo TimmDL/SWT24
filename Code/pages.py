@@ -1,19 +1,23 @@
+import time
 import streamlit as st
 import pandas as pd
 import data
-
-from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
-
+from streamlit_extras.stylable_container import stylable_container
 
 def home_page():
     st.title("Library Admin Dashboard")
     st.header("Welcome to the Library Admin Dashboard")
     st.markdown("Use the sidebar to navigate between different sections of the admin dashboard.")
 
+def clear_confirmation_message():
+    st.session_state.confirmation_message = ""
+    st.session_state.confirmation_message_type = ""
+    st.session_state.confirmation_time = 0
 
 def manage_page():
     st.title("Manage Books and Customers")
 
+    # Initialize session state variables
     if "confirm_add_book" not in st.session_state:
         st.session_state.confirm_add_book = False
     if "confirm_remove_book" not in st.session_state:
@@ -26,10 +30,12 @@ def manage_page():
         st.session_state.confirmation_message = ""
     if "confirmation_message_type" not in st.session_state:
         st.session_state.confirmation_message_type = ""
+    if "confirmation_time" not in st.session_state:
+        st.session_state.confirmation_time = 0
 
-    def clear_confirmation_message():
-        st.session_state.confirmation_message = ""
-        st.session_state.confirmation_message_type = ""
+    # Automatically clear the confirmation message after 10 seconds
+    if st.session_state.confirmation_message and time.time() - st.session_state.confirmation_time > 10:
+        clear_confirmation_message()
 
     col1, col2 = st.columns(2)
 
@@ -70,16 +76,34 @@ def manage_page():
             st.write(f"Author: {author}")
             st.write(f"Genre: {genre}")
             st.write(f"ISBN: {isbn}")
-            if st.button("Confirm Add Book"):
-                new_book = {"Title": title, "Author": author, "Genre": genre, "ISBN": isbn, "Availability": "Available", "BorrowedBy": ""}
-                data.books_data.append(new_book)
-                data.save_books(data.books_data)
-                st.session_state.confirmation_message = "Book added successfully!"
-                st.session_state.confirmation_message_type = "success"
-                st.session_state.confirm_add_book = False
-                st.experimental_rerun()
-            if st.button("Cancel"):
-                st.session_state.confirm_add_book = False
+            with stylable_container(
+                "green",
+                css_styles="""
+                button {
+                    background-color: #00FF00;
+                    color: black;
+                }""",
+            ):
+                if st.button("Confirm Add Book", key="confirm_add_book_btn"):
+                    new_book = {"Title": title, "Author": author, "Genre": genre, "ISBN": isbn, "Availability": "Available", "BorrowedBy": ""}
+                    data.books_data.append(new_book)
+                    data.save_books(data.books_data)
+                    st.session_state.confirmation_message = "Book added successfully!"
+                    st.session_state.confirmation_message_type = "success"
+                    st.session_state.confirmation_time = time.time()
+                    st.session_state.confirm_add_book = False
+                    st.experimental_rerun()
+            with stylable_container(
+                "red",
+                css_styles="""
+                button {
+                    background-color: #FF0000;
+                    color: white;
+                }""",
+            ):
+                if st.button("Cancel", key="cancel_add_book_btn"):
+                    st.session_state.confirm_add_book = False
+                    st.experimental_rerun()
 
         st.write("### Remove Book")
         remove_search_query_books = st.text_input("Search Book to Remove (by Title, Author, Genre, or ISBN)", key="remove_search_query_books")
@@ -90,7 +114,7 @@ def manage_page():
                                 remove_search_query_books.lower() in book["Genre"].lower() or
                                 remove_search_query_books in book.get("ISBN", "")]
 
-        remove_book_title = st.selectbox("Select Book to Remove", ["" if remove_search_query_books == "" else book["Title"] for book in filtered_remove_books], key="remove_book")
+        remove_book_title = st.selectbox("Select Book to Remove", [book["Title"] for book in filtered_remove_books], key="remove_book")
 
         if st.button("Remove Book"):
             if remove_book_title:
@@ -101,15 +125,33 @@ def manage_page():
         if st.session_state.confirm_remove_book:
             st.write("### Confirm Removing Book")
             st.write(f"Book: {remove_book_title}")
-            if st.button("Confirm Remove Book"):
-                data.books_data = [book for book in data.books_data if book["Title"] != remove_book_title]
-                data.save_books(data.books_data)
-                st.session_state.confirmation_message = "Book removed successfully!"
-                st.session_state.confirmation_message_type = "success"
-                st.session_state.confirm_remove_book = False
-                st.experimental_rerun()
-            if st.button("Cancel"):
-                st.session_state.confirm_remove_book = False
+            with stylable_container(
+                "green",
+                css_styles="""
+                button {
+                    background-color: #00FF00;
+                    color: black;
+                }""",
+            ):
+                if st.button("Confirm Remove Book", key="confirm_remove_book_btn"):
+                    data.books_data = [book for book in data.books_data if book["Title"] != remove_book_title]
+                    data.save_books(data.books_data)
+                    st.session_state.confirmation_message = "Book removed successfully!"
+                    st.session_state.confirmation_message_type = "success"
+                    st.session_state.confirmation_time = time.time()
+                    st.session_state.confirm_remove_book = False
+                    st.experimental_rerun()
+            with stylable_container(
+                "red",
+                css_styles="""
+                button {
+                    background-color: #FF0000;
+                    color: white;
+                }""",
+            ):
+                if st.button("Cancel", key="cancel_remove_book_btn"):
+                    st.session_state.confirm_remove_book = False
+                    st.experimental_rerun()
 
     with col2:
         st.subheader("Manage Customers")
@@ -150,16 +192,34 @@ def manage_page():
             st.write(f"Name: {name}")
             st.write(f"Email: {email}")
             st.write(f"Address: {address}")
-            if st.button("Confirm Add Customer"):
-                new_customer = {"CustomerID": customer_id, "Name": name, "Email": email, "Address": address, "BorrowedBooks": []}
-                data.customers_data.append(new_customer)
-                data.save_customers(data.customers_data)
-                st.session_state.confirmation_message = "Customer added successfully!"
-                st.session_state.confirmation_message_type = "success"
-                st.session_state.confirm_add_customer = False
-                st.experimental_rerun()
-            if st.button("Cancel"):
-                st.session_state.confirm_add_customer = False
+            with stylable_container(
+                "green",
+                css_styles="""
+                button {
+                    background-color: #00FF00;
+                    color: black;
+                }""",
+            ):
+                if st.button("Confirm Add Customer", key="confirm_add_customer_btn"):
+                    new_customer = {"CustomerID": customer_id, "Name": name, "Email": email, "Address": address, "BorrowedBooks": []}
+                    data.customers_data.append(new_customer)
+                    data.save_customers(data.customers_data)
+                    st.session_state.confirmation_message = "Customer added successfully!"
+                    st.session_state.confirmation_message_type = "success"
+                    st.session_state.confirmation_time = time.time()
+                    st.session_state.confirm_add_customer = False
+                    st.experimental_rerun()
+            with stylable_container(
+                "red",
+                css_styles="""
+                button {
+                    background-color: #FF0000;
+                    color: white;
+                }""",
+            ):
+                if st.button("Cancel", key="cancel_add_customer_btn"):
+                    st.session_state.confirm_add_customer = False
+                    st.experimental_rerun()
 
         st.write("### Remove Customer")
         remove_search_query_customers = st.text_input("Search Customer to Remove (by Name or ID)", key="remove_search_query_customers")
@@ -168,7 +228,7 @@ def manage_page():
                                     remove_search_query_customers.lower() in customer["Name"].lower() or
                                     remove_search_query_customers in customer["CustomerID"]]
 
-        remove_customer_id = st.selectbox("Select Customer to Remove", ["" if remove_search_query_customers == "" else f"{customer['CustomerID']} - {customer['Name']}" for customer in filtered_remove_customers], key="remove_customer")
+        remove_customer_id = st.selectbox("Select Customer to Remove", [f"{customer['CustomerID']} - {customer['Name']}" for customer in filtered_remove_customers], key="remove_customer")
 
         if st.button("Remove Customer"):
             if remove_customer_id:
@@ -179,16 +239,34 @@ def manage_page():
         if st.session_state.confirm_remove_customer:
             st.write("### Confirm Removing Customer")
             st.write(f"Customer: {remove_customer_id}")
-            if st.button("Confirm Remove Customer"):
-                customer_id = remove_customer_id.split(" - ")[0]
-                data.customers_data = [customer for customer in data.customers_data if customer["CustomerID"] != customer_id]
-                data.save_customers(data.customers_data)
-                st.session_state.confirmation_message = "Customer removed successfully!"
-                st.session_state.confirmation_message_type = "success"
-                st.session_state.confirm_remove_customer = False
-                st.experimental_rerun()
-            if st.button("Cancel"):
-                st.session_state.confirm_remove_customer = False
+            with stylable_container(
+                "green",
+                css_styles="""
+                button {
+                    background-color: #00FF00;
+                    color: black;
+                }""",
+            ):
+                if st.button("Confirm Remove Customer", key="confirm_remove_customer_btn"):
+                    customer_id = remove_customer_id.split(" - ")[0]
+                    data.customers_data = [customer for customer in data.customers_data if customer["CustomerID"] != customer_id]
+                    data.save_customers(data.customers_data)
+                    st.session_state.confirmation_message = "Customer removed successfully!"
+                    st.session_state.confirmation_message_type = "success"
+                    st.session_state.confirmation_time = time.time()
+                    st.session_state.confirm_remove_customer = False
+                    st.experimental_rerun()
+            with stylable_container(
+                "red",
+                css_styles="""
+                button {
+                    background-color: #FF0000;
+                    color: white;
+                }""",
+            ):
+                if st.button("Cancel", key="cancel_remove_customer_btn"):
+                    st.session_state.confirm_remove_customer = False
+                    st.experimental_rerun()
 
     if st.session_state.confirmation_message:
         if st.session_state.confirmation_message_type == "success":
@@ -196,10 +274,10 @@ def manage_page():
         elif st.session_state.confirmation_message_type == "error":
             st.error(st.session_state.confirmation_message)
 
-
 def lending_records_page():
     st.title("Lending Records")
 
+    # Initialize session state variables
     if "selected_books" not in st.session_state:
         st.session_state.selected_books = []
     if "selected_return_books" not in st.session_state:
@@ -216,10 +294,17 @@ def lending_records_page():
         st.session_state.confirm_borrow = False
     if "confirm_return" not in st.session_state:
         st.session_state.confirm_return = False
+    if "confirmation_time" not in st.session_state:
+        st.session_state.confirmation_time = 0
 
     def clear_confirmation_message():
         st.session_state.confirmation_message = ""
         st.session_state.confirmation_message_type = ""
+        st.session_state.confirmation_time = 0
+
+    # Automatically clear the confirmation message after 10 seconds
+    if st.session_state.confirmation_message and time.time() - st.session_state.confirmation_time > 10:
+        clear_confirmation_message()
 
     st.subheader("Search and Select Customer")
     search_query = st.text_input("Search by Name or ID")
@@ -254,25 +339,43 @@ def lending_records_page():
                         st.write("### Confirm Borrowing")
                         st.write(f"Customer: {selected_customer['Name']} (Email: {selected_customer['Email']})")
                         st.write(f"Books: {', '.join(st.session_state.selected_books)}")
-                        if st.button("Confirm Borrow"):
-                            borrowed_books = selected_customer.get('BorrowedBooks', [])
-                            if isinstance(borrowed_books, str):
-                                borrowed_books = borrowed_books.split(", ") if borrowed_books else []
-                            for book_title in st.session_state.selected_books:
-                                for book in data.books_data:
-                                    if book["Title"] == book_title:
-                                        book["Availability"] = "Borrowed"
-                                        book["BorrowedBy"] = selected_customer_id
-                                        borrowed_books.append(book_title)
-                            selected_customer["BorrowedBooks"] = ", ".join(borrowed_books)
-                            data.save_books(data.books_data)
-                            data.save_customers(data.customers_data)
-                            st.session_state.confirmation_message = "Books borrowed successfully!"
-                            st.session_state.confirmation_message_type = "success"
-                            st.session_state.confirm_borrow = False
-                            st.experimental_rerun()
-                        if st.button("Cancel"):
-                            st.session_state.confirm_borrow = False
+                        with stylable_container(
+                            "green",
+                            css_styles="""
+                            button {
+                                background-color: #00FF00;
+                                color: black;
+                            }""",
+                        ):
+                            if st.button("Confirm Borrow", key="confirm_borrow_btn"):
+                                borrowed_books = selected_customer.get('BorrowedBooks', [])
+                                if isinstance(borrowed_books, str):
+                                    borrowed_books = borrowed_books.split(", ") if borrowed_books else []
+                                for book_title in st.session_state.selected_books:
+                                    for book in data.books_data:
+                                        if book["Title"] == book_title:
+                                            book["Availability"] = "Borrowed"
+                                            book["BorrowedBy"] = selected_customer_id
+                                            borrowed_books.append(book_title)
+                                selected_customer["BorrowedBooks"] = ", ".join(borrowed_books)
+                                data.save_books(data.books_data)
+                                data.save_customers(data.customers_data)
+                                st.session_state.confirmation_message = "Books borrowed successfully!"
+                                st.session_state.confirmation_message_type = "success"
+                                st.session_state.confirmation_time = time.time()
+                                st.session_state.confirm_borrow = False
+                                st.experimental_rerun()
+                        with stylable_container(
+                            "red",
+                            css_styles="""
+                            button {
+                                background-color: #FF0000;
+                                color: white;
+                            }""",
+                        ):
+                            if st.button("Cancel", key="cancel_borrow_btn"):
+                                st.session_state.confirm_borrow = False
+                                st.experimental_rerun()
 
                 with col2:
                     st.subheader("Return Borrowed Books")
@@ -293,25 +396,43 @@ def lending_records_page():
                         st.write("### Confirm Returning")
                         st.write(f"Customer: {selected_customer['Name']} (Email: {selected_customer['Email']})")
                         st.write(f"Books: {', '.join(st.session_state.selected_return_books)}")
-                        if st.button("Confirm Return"):
-                            borrowed_books = selected_customer.get('BorrowedBooks', [])
-                            if isinstance(borrowed_books, str):
-                                borrowed_books = borrowed_books.split(", ") if borrowed_books else []
-                            for book_title in st.session_state.selected_return_books:
-                                borrowed_books.remove(book_title)
-                                for book in data.books_data:
-                                    if book["Title"] == book_title:
-                                        book["Availability"] = "Available"
-                                        book["BorrowedBy"] = ""
-                            selected_customer["BorrowedBooks"] = ", ".join(borrowed_books)
-                            data.save_books(data.books_data)
-                            data.save_customers(data.customers_data)
-                            st.session_state.confirmation_message = "Books returned successfully!"
-                            st.session_state.confirmation_message_type = "success"
-                            st.session_state.confirm_return = False
-                            st.experimental_rerun()
-                        if st.button("Cancel"):
-                            st.session_state.confirm_return = False
+                        with stylable_container(
+                            "green",
+                            css_styles="""
+                            button {
+                                background-color: #00FF00;
+                                color: black;
+                            }""",
+                        ):
+                            if st.button("Confirm Return", key="confirm_return_btn"):
+                                borrowed_books = selected_customer.get('BorrowedBooks', [])
+                                if isinstance(borrowed_books, str):
+                                    borrowed_books = borrowed_books.split(", ") if borrowed_books else []
+                                for book_title in st.session_state.selected_return_books:
+                                    borrowed_books.remove(book_title)
+                                    for book in data.books_data:
+                                        if book["Title"] == book_title:
+                                            book["Availability"] = "Available"
+                                            book["BorrowedBy"] = ""
+                                selected_customer["BorrowedBooks"] = ", ".join(borrowed_books)
+                                data.save_books(data.books_data)
+                                data.save_customers(data.customers_data)
+                                st.session_state.confirmation_message = "Books returned successfully!"
+                                st.session_state.confirmation_message_type = "success"
+                                st.session_state.confirmation_time = time.time()
+                                st.session_state.confirm_return = False
+                                st.experimental_rerun()
+                        with stylable_container(
+                            "red",
+                            css_styles="""
+                            button {
+                                background-color: #FF0000;
+                                color: white;
+                            }""",
+                        ):
+                            if st.button("Cancel", key="cancel_return_btn"):
+                                st.session_state.confirm_return = False
+                                st.experimental_rerun()
 
                 st.subheader("Currently Borrowed Books")
                 if borrowed_books:
@@ -330,4 +451,3 @@ def lending_records_page():
             st.write("No customers found.")
     else:
         st.write("Please enter a search query.")
-
